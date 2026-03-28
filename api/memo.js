@@ -8,19 +8,21 @@ const supabase = createClient(
 )
 
 module.exports = async function handler(req, res) {
-  const { content } = req.body
+  try {
+    const { content } = req.body
 
-  const message = await claude.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 200,
-    messages: [{ role: 'user', content: `以下を1文で要約して：${content}` }]
-  })
-  const summary = message.content[0].text
+    const message = await claude.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 200,
+      messages: [{ role: 'user', content: `以下を1文で要約して：${content}` }]
+    })
+    const summary = message.content[0].text
 
-  const { error } = await supabase
-    .from('memos')
-    .insert({ content, summary })
+    await supabase.from('memos').insert({ content, summary })
 
-  if (error) return res.status(500).json({ error })
-  res.status(200).json({ summary })
+    res.status(200).json({ summary })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err.message })
+  }
 }
