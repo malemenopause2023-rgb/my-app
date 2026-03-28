@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>AIメモアプリ</title>
+</head>
+<body>
+  <h1>AIメモアプリ</h1>
+  <textarea id="memo" rows="5" cols="40" placeholder="メモを入力..."></textarea>
+  <br>
+  <button onclick="save()">保存して要約する</button>
+  <p id="result"></p>
+
+  <script>
+    async function save() {
+      const content = document.getElementById('memo').value
+      document.getElementById('result').textContent = '処理中...'
+
+      const res = await fetch('/api/memo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      })
+      const data = await res.json()
+      document.getElementById('result').textContent = '要約：' + data.summary
+    }
+  </script>
+</body>
+</html>
