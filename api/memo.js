@@ -1,9 +1,13 @@
-import Anthropic from '@anthropic-ai/sdk'
-import { supabase } from '../lib/supabase.js'
+const Anthropic = require('@anthropic-ai/sdk')
+const { createClient } = require('@supabase/supabase-js')
 
 const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const { content } = req.body
 
   const message = await claude.messages.create({
